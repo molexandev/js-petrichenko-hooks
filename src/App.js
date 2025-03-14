@@ -1,4 +1,4 @@
-import { Component, useState, useEffect } from 'react';
+import { Component, useState, useEffect, useCallback } from 'react';
 import { Container } from 'react-bootstrap';
 import './App.css';
 
@@ -76,33 +76,47 @@ import './App.css';
 //!    return Math.random() * (50 - 1) + 1;
 //! };
 
+const countTotal = (num) => {
+   console.log('counting...');
+   return num + 10;
+};
+
 const Slider = () => {
    const [slide, setSlide] = useState(0);
    const [autoplay, setAvtoplay] = useState(false);
+
+   const getSomeImages = useCallback(() => {
+      console.log('fetching');
+
+      return [
+         'https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg',
+         'https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg',
+      ];
+   }, []);
 
    function logging() {
       console.log('Log!');
    }
 
-   useEffect(() => {
-      console.log('effect');
-      document.title = `Slide: ${slide}`;
+   // useEffect(() => {
+   //    console.log('effect');
+   //    document.title = `Slide: ${slide}`;
 
-      window.addEventListener('click', logging);
+   //    window.addEventListener('click', logging);
 
-      return () => {
-         window.removeEventListener('click', logging);
-      };
-   }, []);
+   //    return () => {
+   //       window.removeEventListener('click', logging);
+   //    };
+   // }, [slide]);
 
-   useEffect(() => {
-      console.log('effect update');
-      document.title = `Slide: ${slide}`;
-   }, [slide]);
+   // useEffect(() => {
+   //    console.log('effect update');
+   //    document.title = `Slide: ${slide}`;
+   // }, [slide]);
 
-   useEffect(() => {
-      console.log('autoplay');
-   }, [autoplay]);
+   // useEffect(() => {
+   //    console.log('autoplay');
+   // }, [autoplay]);
 
    function changeSlide(i) {
       setSlide((slide) => slide + i);
@@ -111,6 +125,8 @@ const Slider = () => {
    function toggleAutoplay() {
       setAvtoplay((autoplay) => !autoplay);
    }
+
+   const total = countTotal(slide);
 
    //    const [state, setState] = useState({ slide: 0, autoplay: false });
 
@@ -125,11 +141,25 @@ const Slider = () => {
    return (
       <Container>
          <div className="slider w-50 m-auto">
-            <img
+            {/* <img
                className="d-block w-100"
                src="https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg"
                alt="slide"
-            />
+            /> */}
+
+            {/* {getSomeImages().map((url, i) => {
+               return (
+                  <img
+                     key={i}
+                     className="d-block w-100"
+                     src={url}
+                     alt="slide"
+                  />
+               );
+            })} */}
+
+            <Slide getSomeImages={getSomeImages} />
+
             <div className="text-center mt-5">
                Active slide {slide} <br /> {autoplay ? 'auto' : false}
             </div>
@@ -159,6 +189,22 @@ const Slider = () => {
             </div>
          </div>
       </Container>
+   );
+};
+
+const Slide = ({ getSomeImages }) => {
+   const [images, setImages] = useState([]);
+
+   useEffect(() => {
+      setImages(getSomeImages());
+   }, [getSomeImages]);
+
+   return (
+      <>
+         {images.map((url, i) => (
+            <img key={i} className="d-block w-100" src={url} alt="slide" />
+         ))}
+      </>
    );
 };
 
